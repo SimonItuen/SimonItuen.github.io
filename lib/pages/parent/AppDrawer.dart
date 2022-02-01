@@ -19,6 +19,8 @@ class AppDrawer extends StatefulWidget {
 class _AppDrawerState extends State<AppDrawer> {
   List<String> drawerNames = [];
   List<IconData> drawerIcons = [];
+  List<IconData> selectedDrawerIcons = [];
+  ScrollController pageScrollController = ScrollController();
 
   @override
   void initState() {
@@ -26,13 +28,23 @@ class _AppDrawerState extends State<AppDrawer> {
     super.initState();
 
     drawerIcons = [
-      Icons.av_timer,
+      Icons.analytics_outlined,
+      Icons.supervisor_account_outlined,
+      Icons.child_care_outlined,
+      Icons.coronavirus_outlined,
+      Icons.medication_outlined,
+      Icons.shopping_cart_outlined,
+      Icons.language_outlined,
+      Icons.settings_outlined
+    ];
+
+    selectedDrawerIcons = [
+      Icons.analytics_rounded,
       Icons.supervisor_account_rounded,
       Icons.child_care_rounded,
-      Icons.coronavirus_outlined,
+      Icons.coronavirus_rounded,
       Icons.medication_rounded,
       Icons.shopping_cart_rounded,
-      Icons.local_pharmacy_rounded,
       Icons.language_rounded,
       Icons.settings_rounded
     ];
@@ -48,7 +60,6 @@ class _AppDrawerState extends State<AppDrawer> {
       AppLocalizations.of(context)!.diseases,
       AppLocalizations.of(context)!.vaccines,
       AppLocalizations.of(context)!.orders,
-      AppLocalizations.of(context)!.pharmacies,
       AppLocalizations.of(context)!.countries,
       AppLocalizations.of(context)!.settings,
     ];
@@ -58,9 +69,11 @@ class _AppDrawerState extends State<AppDrawer> {
             child: Drawer(
               child: Container(
                 color: Theme.of(context).primaryColor,
-                child: Scrollbar(
-                  interactive: true,
+                child:  Scrollbar(
+                  interactive:true,
+                  controller: pageScrollController,
                   child: SingleChildScrollView(
+                    controller: pageScrollController,
                     padding: EdgeInsets.only(left: 8, top: 16, right: 8),
                     child: Column(
                       children: [
@@ -77,7 +90,7 @@ class _AppDrawerState extends State<AppDrawer> {
                         for (int i = 0; i < drawerNames.length; i++)
                           DrawerTile(
                               isSelected: appProvider.currentPage == i,
-                              icon: drawerIcons[i],
+                              icon: appProvider.currentPage == i?selectedDrawerIcons[i]:drawerIcons[i],
                               title: drawerNames[i],
                               onPress: () {
                                 appProvider.currentPage = i;
@@ -146,9 +159,12 @@ class _AppDrawerState extends State<AppDrawer> {
                       for (int i = 0; i < drawerNames.length; i++)
                         DrawerTile(
                             isSelected: appProvider.currentPage == i,
-                            icon: drawerIcons[i],
+                            icon: appProvider.currentPage == i?selectedDrawerIcons[i]:drawerIcons[i],
                             title: drawerNames[i],
                             onPress: () {
+                              if(ResponsiveLayout.isPhone(context)){
+                                Navigator.of(context).maybePop();
+                              }
                               appProvider.currentPage = i;
                             }),
                     ],

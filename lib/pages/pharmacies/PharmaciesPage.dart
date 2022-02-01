@@ -17,6 +17,8 @@ class PharmaciesPage extends StatefulWidget {
 }
 
 class _PharmaciesPageState extends State<PharmaciesPage> {
+  ScrollController pageScrollController = ScrollController();
+
   bool isLoading = true;
 
   @override
@@ -24,7 +26,7 @@ class _PharmaciesPageState extends State<PharmaciesPage> {
     // TODO: implement initState
     super.initState();
     Future.delayed(Duration.zero, () async {
-      isLoading = await HttpService.getPharmacies(context);
+     /* isLoading = await HttpService.getPharmacies(context);*/
       setState(() {});
     });
   }
@@ -41,7 +43,30 @@ class _PharmaciesPageState extends State<PharmaciesPage> {
             child: ResponsiveLayout(
                 phone: Container(
                   child: Container(
+                    child:  Scrollbar(
+                      interactive:true,
+                      controller: pageScrollController,
+                      child: SingleChildScrollView(
+                        controller: pageScrollController,
+                        child: Column(
+                          children: [
+                            for (PharmacyModel model in appProvider.pharmacyList)
+                              PharmaciesTile(
+                                name: model.name,
+                                onPress: () {},
+                                address: model.address,)
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                tablet: Container(
+                  child:  Scrollbar(
+                    interactive:true,
+                    controller: pageScrollController,
                     child: SingleChildScrollView(
+                      controller: pageScrollController,
                       child: Column(
                         children: [
                           for (PharmacyModel model in appProvider.pharmacyList)
@@ -54,29 +79,21 @@ class _PharmaciesPageState extends State<PharmaciesPage> {
                     ),
                   ),
                 ),
-                tablet: Container(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        for (PharmacyModel model in appProvider.pharmacyList)
-                          PharmaciesTile(
-                            name: model.name,
-                            onPress: () {},
-                            address: model.address,)
-                      ],
-                    ),
-                  ),
-                ),
                 desktop: Container(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        for (PharmacyModel model in appProvider.pharmacyList)
-                          PharmaciesTile(
-                            name: model.name,
-                            onPress: () {},
-                            address: model.address,)
-                      ],
+                  child:  Scrollbar(
+                    interactive:true,
+                    controller: pageScrollController,
+                    child: SingleChildScrollView(
+                      controller: pageScrollController,
+                      child: Column(
+                        children: [
+                          for (PharmacyModel model in appProvider.pharmacyList)
+                            PharmaciesTile(
+                              name: model.name,
+                              onPress: () {},
+                              address: model.address,)
+                        ],
+                      ),
                     ),
                   ),
                 )),

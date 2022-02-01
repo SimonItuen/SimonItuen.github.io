@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:vaksine_web/pages/ParentPage.dart';
-import 'package:vaksine_web/pages/home/HomePage.dart';
+import 'package:vaksine_web/pages/login/LoginPage.dart';
+import 'package:vaksine_web/pages/parent/ParentPage.dart';
+import 'package:vaksine_web/pages/start_up/StartUpPage.dart';
 import 'package:vaksine_web/providers/app_provider.dart';
 import 'package:vaksine_web/util/colors_util.dart';
 import 'package:vaksine_web/l10n/l10n.dart';
@@ -50,7 +51,9 @@ class MyApp extends StatelessWidget {
         primarySwatch: ColorsUtil.primaryColor,
       ),
       routes: {
-        '/': (_) => ParentPage(),
+        '/': (_) => StartUpPage(),
+        LoginPage.routeName: (_) => LoginPage(),
+        ParentPage.routeName: (_) => ParentPage()
       },
     );
   }

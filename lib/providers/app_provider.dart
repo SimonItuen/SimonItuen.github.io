@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:vaksine_web/models/child_vaccine_program_model.dart';
 import 'package:vaksine_web/models/country_model.dart';
 import 'package:vaksine_web/models/dashboard_model.dart';
+import 'package:vaksine_web/models/other_model.dart';
+import 'package:vaksine_web/models/price_model.dart';
 import 'package:vaksine_web/models/vaccine_model.dart';
 import 'package:vaksine_web/models/disease_model.dart';
 import 'package:vaksine_web/models/admin_model.dart';
@@ -12,9 +14,11 @@ import 'package:vaksine_web/models/child_vaccine_program_model.dart';
 import 'package:vaksine_web/models/user_model.dart';
 import 'dart:convert' as convert;
 
+import 'package:vaksine_web/util/session_manager_util.dart';
+
 class AppProvider with ChangeNotifier {
   Locale _appLocale = const Locale('nb', '');
-  AdminModel _currentAdmin = AdminModel(givenName: 'Ola', surname: 'Turmo');
+  AdminModel _currentAdmin = AdminModel(username: 'Ola');
   UserModel _selectedUser = UserModel();
   DashboardModel _currentDashboard = DashboardModel(
       userCount: '0',
@@ -23,17 +27,34 @@ class AppProvider with ChangeNotifier {
       vaccineCount: '0',
       countryCount: '0',
       childProgramCount: '0',
-      pharmacyCount: '0');
+      pharmacyCount: '0', consultationFee: PriceModel(), aboutUs: OtherModel(), contactUs: OtherModel());
   OrderModel _selectedOrder = OrderModel();
   PharmacyModel _selectedPharmacy = PharmacyModel();
   ChildVaccineProgramModel _selectedChildProgram = ChildVaccineProgramModel();
   DiseaseModel _selectedDisease = DiseaseModel();
   VaccineModel _selectedVaccine = VaccineModel();
+  PriceModel _consultationFee = PriceModel();
+
+  PriceModel get consultationFee => _consultationFee;
+
+  set consultationFee(PriceModel value) {
+    _consultationFee = value;
+    notifyListeners();
+  }
+
+  int _price = 29900;
+
+  int get price => _price;
+
+  set price(int value) {
+    _price = value;
+    notifyListeners();
+  }
 
   int _currentPage = 0;
 
   CountryModel _selectedCountry =
-      CountryModel(nameEn: 'Afghanistan', nameBo: 'Afghanistan', code: 'AF');
+      CountryModel();
 
   CountryModel get selectedCountry => _selectedCountry;
 
@@ -80,7 +101,6 @@ class AppProvider with ChangeNotifier {
 
   UserModel get selectedUser => _selectedUser;
 
-
   DashboardModel get currentDashboard => _currentDashboard;
 
   set currentDashboard(DashboardModel value) {
@@ -116,6 +136,8 @@ class AppProvider with ChangeNotifier {
 
   set currentAdmin(AdminModel value) {
     _currentAdmin = value;
+    SessionManagerUtil.getInstance();
+    SessionManagerUtil.putString('currentAdmin', convert.jsonEncode(value.toMap()).toString());
     notifyListeners();
   }
 

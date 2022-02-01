@@ -66,11 +66,11 @@ class DrawerTile extends StatelessWidget {
               onTap: onPress,
               title: Text(
                 title,
-                style: TextStyle(color: Colors.white, fontSize: 14),
+                style: TextStyle(color: isSelected ? const Color(0xFF05A7E7) : Colors.white, fontSize: 14),
               ),
               leading: Icon(
                 icon,
-                color: Colors.white,
+                color: isSelected ? const Color(0xFF05A7E7) : Colors.white,
                 size: 20,
               ),
             ),

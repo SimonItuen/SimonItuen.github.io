@@ -25,6 +25,7 @@ class UserModel {
       cart: cartList,
       genderString: json['gender'].toString(),
       fcmToken: json['fcm_token'].toString(),
+      language: json['language'].toString(),
     );
   }
 

@@ -1,231 +1,217 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:web_scraper/web_scraper.dart';
+import 'package:provider/provider.dart';
+import 'package:vaksine_web/pages/parent/AppDrawer.dart';
+import 'package:vaksine_web/pages/child_vaccine_programmes/ChildVaccineProgrammePage.dart';
+import 'package:vaksine_web/pages/dashboard/DashboardPage.dart';
+import 'package:vaksine_web/pages/diseases/DiseasesPage.dart';
+import 'package:vaksine_web/pages/orders/OrdersPage.dart';
+import 'package:vaksine_web/pages/pharmacies/PharmaciesPage.dart';
+import 'package:vaksine_web/pages/settings/SettingsPage.dart';
+import 'package:vaksine_web/pages/users/UsersPage.dart';
+import 'package:vaksine_web/pages/vaccines/VaccinesPage.dart';
+import 'package:vaksine_web/widget/ResponsiveLayout.dart';
+import 'package:vaksine_web/pages/countries/CountriesPage.dart';
+import 'package:vaksine_web/providers/app_provider.dart';
+import 'package:vaksine_web/services/http_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ParentPage extends StatefulWidget {
+  const ParentPage({Key? key}) : super(key: key);
+
+  static String routeName='/manage/home';
   @override
   _ParentPageState createState() => _ParentPageState();
 }
 
 class _ParentPageState extends State<ParentPage> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  var _formKey = GlobalKey<FormState>();
-  bool visibility = false;
+  List<Widget> children = [
+    DashboardPage(),
+    UsersPage(),
+    ChildVaccineProgrammePage(),
+    DiseasesPage(),
+    VaccinesPage(),
+    OrdersPage(),
+    CountriesPage(),
+    SettingsPage()
+  ];
+  List<String> drawerNames = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    /*Future.wait([
+      HttpService.getVaccines(context),
+      HttpService.getCountries(context),
+      HttpService.getLanguages(context),
+    ]);*/
+  }
 
   @override
   Widget build(BuildContext context) {
+    AppProvider appProvider = Provider.of<AppProvider>(context, listen: true);
+    AppLocalizations? locale = AppLocalizations.of(context);
+    drawerNames = [
+      locale!.dashboard,
+      locale.users,
+      locale.childVaccineProgrammes,
+      locale.diseases,
+      locale.vaccines,
+      locale.orders,
+      locale.countries,
+      locale.settings,
+    ];
     return Scaffold(
       body: LayoutBuilder(
         builder: (context, constraints) {
-          if (constraints.maxWidth > 500) {
-            return Row(
+          return ResponsiveLayout(
+            phone: Scaffold(
+              drawer: AppDrawer(),
+              appBar: AppBar(
+                elevation: 0,
+                centerTitle: true,
+                title: Text(drawerNames[appProvider.currentPage],
+                    style:
+                        TextStyle(fontWeight: FontWeight.normal, fontSize: 16)),
+                actions: [
+                  InkWell(
+                    child: Container(
+                      height: 32,
+                      width: 32,
+                      margin: const EdgeInsets.only(
+                          top: 8.0, bottom: 8.0, right: 16),
+                      decoration: BoxDecoration(
+                          color: Color(0xFF1463B8), shape: BoxShape.circle),
+                      child: Center(
+                          child: Text(
+                        appProvider.currentAdmin.username
+                            .toString()
+                            .substring(0, 1),
+                        style: TextStyle(
+                            fontFamily: 'Comfortaa',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 12),
+                      )),
+                    ),
+                    onTap: () {},
+                  )
+                ],
+              ),
+              body: Container(
+                child: children[appProvider.currentPage],
+              ),
+            ),
+            tablet: Row(
               children: [
+                AppDrawer(),
                 Expanded(
-                  child: SvgPicture.asset(kIsWeb
-                      ? 'images/Parent_picture.svg'
-                      : 'assets/images/Parent_picture.svg'),
-                ),
-                Expanded(
-                  child: Card(
+                    child: Column(
+                  children: [
+                    AppBar(
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                      foregroundColor:
+                          Theme.of(context).textTheme.bodyText1!.color,
+                      elevation: 0,
+                      automaticallyImplyLeading: false,
+                      centerTitle: true,
+                      title: Text(drawerNames[appProvider.currentPage],
+                          style: TextStyle(
+                              fontWeight: FontWeight.normal, fontSize: 16, color: Colors.blueGrey)),
+                      actions: [
+                        InkWell(
+                          child: Container(
+                            height: 32,
+                            width: 32,
+                            margin: const EdgeInsets.only(
+                                top: 8.0, bottom: 8.0, right: 16),
+                            decoration: BoxDecoration(
+                                color: Color(0xFF1463B8),
+                                shape: BoxShape.circle),
+                            child: Center(
+                                child: Text(
+                              appProvider.currentAdmin.username
+                                  .toString()
+                                  .substring(0, 1),
+                              style: TextStyle(
+                                  fontFamily: 'Comfortaa',
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 12),
+                            )),
+                          ),
+                          onTap: () {},
+                        )
+                      ],
+                    ),
+                    Expanded(child: Container(child: children[appProvider.currentPage])),
+                  ],
+                ))
+              ],
+            ),
+            desktop: Container(
+              color: Theme.of(context).primaryColor,
+              child: Row(
+                children: [
+                  AppDrawer(),
+                  Expanded(
                     child: Column(
                       children: [
-                        Text(
-                          'Welcome a bo',
-                          style:
-                              TextStyle(fontFamily: 'Comfortaa', fontSize: 45),
+                        AppBar(
+                          title: Text(drawerNames[appProvider.currentPage],
+                              style: TextStyle(
+                                  fontWeight: FontWeight.normal, fontSize: 20)),
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                          foregroundColor:
+                              Theme.of(context).textTheme.bodyText1!.color,
+                          elevation: 0,
+                          automaticallyImplyLeading: false,
+                          actions: [
+                            Center(
+                              child: Text(
+                                  '${locale.hi} ${appProvider.currentAdmin.username.toString()}',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 16)),
+                            ),
+                            Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 6)),
+                            InkWell(
+                              child: Container(
+                                height: 32,
+                                width: 32,
+                                margin: const EdgeInsets.only(
+                                    top: 8.0, bottom: 8.0, right: 16),
+                                decoration: BoxDecoration(
+                                    color: Color(0xFF1463B8),
+                                    shape: BoxShape.circle),
+                                child: Center(
+                                    child: Text(
+                                  appProvider.currentAdmin.username
+                                      .toString()
+                                      .substring(0, 1),
+                                  style: TextStyle(
+                                      fontFamily: 'Comfortaa',
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                      fontSize: 12),
+                                )),
+                              ),
+                              onTap: () {},
+                            )
+                          ],
                         ),
-                        TextFormField(
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400),
-                          keyboardType: TextInputType.emailAddress,
-                          controller: emailController,
-                          validator: (val) {
-                            if (val!.isEmpty) {
-                              return 'Email cannot be empty';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              hintText: 'Email Address',
-                              hintStyle:
-                                  TextStyle(color: Colors.white, fontSize: 14),
-                              filled: true,
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                  borderSide: BorderSide(
-                                      color: Colors.transparent, width: 1)),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                  borderSide: BorderSide(
-                                      color: Colors.transparent, width: 1)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                  borderSide: BorderSide(
-                                      color: Colors.transparent, width: 1)),
-                              fillColor: Colors.black.withOpacity(0.3),
-                              prefixIcon: Icon(
-                                Icons.mail_rounded,
-                                color: Colors.white.withOpacity(0.6),
-                              )),
-                        ),
-                        Padding(padding: EdgeInsets.all(8)),
-                        TextFormField(
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                          keyboardType: TextInputType.visiblePassword,
-                          controller: passwordController,
-                          obscureText: !visibility,
-                          validator: (val) {
-                            if (val!.isEmpty) {
-                              return 'Password cannot be empty';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              hintText: 'Password',
-                              hintStyle: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400),
-                              suffixIcon: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      visibility = !visibility;
-                                    });
-                                  },
-                                  child: !visibility
-                                      ? Icon(
-                                          Icons.visibility_off,
-                                          color: Colors.white,
-                                        )
-                                      : Icon(Icons.visibility,
-                                          color: Colors.white)),
-                              filled: true,
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                  borderSide: BorderSide(
-                                      color: Colors.transparent, width: 1)),
-                              enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                  borderSide: BorderSide(
-                                      color: Colors.transparent, width: 1)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                  borderSide: BorderSide(
-                                      color: Colors.transparent, width: 1)),
-                              fillColor: Colors.black.withOpacity(0.3),
-                              prefixIcon: Icon(
-                                Icons.lock_rounded,
-                                color: Colors.white.withOpacity(0.6),
-                              )),
-                        ),
-                        RaisedButton(onPressed: () async {
-                          final webScraper = WebScraper('https://webscraper.io');
-                          if (await webScraper.loadWebPage('/test-sites/e-commerce/allinone')) {
-                            List<Map<String, dynamic>> elements = webScraper.getElement('h3.title > a.caption', ['href']);
-                            print(elements);
-                          }
-                        })
+                        Expanded(child: children[appProvider.currentPage]),
                       ],
                     ),
                   ),
-                )
-              ],
-            );
-          } else {
-            return Column(
-              children: [
-                TextFormField(
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400),
-                  keyboardType: TextInputType.emailAddress,
-                  controller: emailController,
-                  validator: (val) {
-                    if (val!.isEmpty) {
-                      return 'Email cannot be empty';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                      hintText: 'Email Address',
-                      hintStyle: TextStyle(color: Colors.white, fontSize: 14),
-                      filled: true,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide:
-                              BorderSide(color: Colors.transparent, width: 1)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide:
-                              BorderSide(color: Colors.transparent, width: 1)),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide:
-                              BorderSide(color: Colors.transparent, width: 1)),
-                      fillColor: Colors.black.withOpacity(0.3),
-                      prefixIcon: Icon(
-                        Icons.mail_rounded,
-                        color: Colors.white.withOpacity(0.6),
-                      )),
-                ),
-                Padding(padding: EdgeInsets.all(8)),
-                TextFormField(
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                  keyboardType: TextInputType.visiblePassword,
-                  controller: passwordController,
-                  obscureText: !visibility,
-                  validator: (val) {
-                    if (val!.isEmpty) {
-                      return 'Password cannot be empty';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                      hintText: 'Password',
-                      hintStyle: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                      suffixIcon: InkWell(
-                          onTap: () {
-                            setState(() {
-                              visibility = !visibility;
-                            });
-                          },
-                          child: !visibility
-                              ? Icon(
-                                  Icons.visibility_off,
-                                  color: Colors.white,
-                                )
-                              : Icon(Icons.visibility, color: Colors.white)),
-                      filled: true,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide:
-                              BorderSide(color: Colors.transparent, width: 1)),
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide:
-                              BorderSide(color: Colors.transparent, width: 1)),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6),
-                          borderSide:
-                              BorderSide(color: Colors.transparent, width: 1)),
-                      fillColor: Colors.black.withOpacity(0.3),
-                      prefixIcon: Icon(
-                        Icons.lock_rounded,
-                        color: Colors.white.withOpacity(0.6),
-                      )),
-                ),
-              ],
-            );
-          }
+                ],
+              ),
+            ),
+          );
         },
       ),
     );

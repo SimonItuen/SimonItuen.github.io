@@ -1,6 +1,5 @@
 class AdminModel {
-  String surname;
-  String givenName;
+  String username;
   String id;
   String email;
   String accessToken;
@@ -10,8 +9,7 @@ class AdminModel {
 
 
     return AdminModel(
-      surname: json['surname'].toString(),
-      givenName: json['given_name'].toString(),
+      username: json['username'].toString(),
       id: json['_id'].toString(),
       email: json['email'].toString(),
       accessToken: json['access_token'].toString(),
@@ -20,8 +18,7 @@ class AdminModel {
   }
 
   AdminModel({
-    this.surname = '',
-    this.givenName = '',
+    this.username = '',
     this.id = '',
     this.email='',
     this.accessToken = '',
@@ -33,8 +30,7 @@ class AdminModel {
       "_id": id,
       "email": email,
       "access_token": accessToken,
-      "given_name": givenName,
-      "surname": surname,
+      "username": username,
       "language": language
     };
   }
